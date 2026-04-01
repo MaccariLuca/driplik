@@ -1,3 +1,15 @@
+<p align="center">
+  <img src="logo.png" alt="Driplik" width="120" />
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/React-18-61DAFB?style=flat&logo=react&logoColor=white" />
+  <img src="https://img.shields.io/badge/PHP-8.x-777BB4?style=flat&logo=php&logoColor=white" />
+  <img src="https://img.shields.io/badge/Anthropic-Claude-00E5A0?style=flat" />
+  <img src="https://img.shields.io/badge/Google-PageSpeed-4285F4?style=flat&logo=google&logoColor=white" />
+  <img src="https://img.shields.io/badge/Hosting-Aruba-E63329?style=flat" />
+</p>
+
 # Driplik
 
 Audit automatico per siti e-commerce — dati reali da Google PageSpeed Insights, interpretati da AI.
@@ -22,8 +34,7 @@ I dati vengono misurati da Google PageSpeed Insights e poi interpretati da Claud
 
 ```
 driplik/
-├── index.html          # Coming soon (pagina pubblica attuale)
-├── indexDrip.html      # App audit (frontend React + chiamate API)
+├── index.html      # App audit (frontend React + chiamate API)
 ├── proxy.php           # Proxy lato server (protegge la chiave API Anthropic)
 └── coming-soon.html    # Pagina di manutenzione animata
 ```
@@ -84,7 +95,7 @@ Apri `proxy.php` e inserisci la tua chiave API:
 define('ANTHROPIC_API_KEY', 'sk-ant-...');  // inserisci qui
 ```
 
-Apri `indexDrip.html` e inserisci la tua chiave PageSpeed (cerca `&key=`):
+Apri `index.html` e inserisci la tua chiave PageSpeed (cerca `&key=`):
 
 ```js
 + '&key=LA_TUA_CHIAVE_GOOGLE'
@@ -96,7 +107,7 @@ Avvia un server PHP locale:
 php -S localhost:8000
 ```
 
-Apri `http://localhost:8000/indexDrip.html`
+Apri `http://localhost:8000/index.html`
 
 ---
 
@@ -104,7 +115,7 @@ Apri `http://localhost:8000/indexDrip.html`
 
 1. Carica tutti i file via FTP nella cartella `public_html`
 2. Inserisci le chiavi API in `proxy.php`
-3. Verifica che `proxy.php` sia nella stessa cartella di `indexDrip.html`
+3. Verifica che `proxy.php` sia nella stessa cartella di `index.html`
 4. Testa aprendo `tuodominio.com/proxy.php` — deve rispondere con `{"error":"Metodo non consentito"}`
 
 ---
@@ -114,7 +125,7 @@ Apri `http://localhost:8000/indexDrip.html`
 | File | Variabile | Dove ottenerla |
 |---|---|---|
 | `proxy.php` | `ANTHROPIC_API_KEY` | [console.anthropic.com](https://console.anthropic.com) |
-| `indexDrip.html` | `&key=` nell'URL PageSpeed | [console.cloud.google.com](https://console.cloud.google.com) |
+| `index.html` | `&key=` nell'URL PageSpeed | [console.cloud.google.com](https://console.cloud.google.com) |
 
 > **Attenzione:** non committare mai le chiavi API reali. Usa il segnaposto e inserisci le chiavi direttamente sul server.
 
