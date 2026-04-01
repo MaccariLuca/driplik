@@ -1,3 +1,15 @@
+<p align="center">
+  <img src="logo.png" alt="Driplik" width="120" />
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/React-18-61DAFB?style=flat&logo=react&logoColor=white" />
+  <img src="https://img.shields.io/badge/PHP-8.x-777BB4?style=flat&logo=php&logoColor=white" />
+  <img src="https://img.shields.io/badge/Anthropic-Claude-00E5A0?style=flat" />
+  <img src="https://img.shields.io/badge/Google-PageSpeed-4285F4?style=flat&logo=google&logoColor=white" />
+  <img src="https://img.shields.io/badge/Hosting-Aruba-E63329?style=flat" />
+</p>
+
 # Driplik
 
 Audit automatico per siti e-commerce — dati reali da Google PageSpeed Insights, interpretati da AI.
