@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Driplik — Coming Soon</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&family=Syne:wght@400;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #05050e;
+      --accent: #00e5a0;
+      --accent2: #00b8d9;
+      --dim: #111128;
+      --border: #1a1a30;
+      --text: #e0e0f0;
+      --muted: #3a3a5c;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      overflow: hidden;
+    }
+
+    /* ---- CANVAS DI SFONDO ---- */
+    canvas#bg {
+      position: fixed;
+      inset: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      opacity: 0.45;
+    }
+
+    /* ---- NOISE OVERLAY ---- */
+    .noise {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.035;
+    }
+
+    /* ---- LAYOUT ---- */
+    .page {
+      position: relative;
+      z-index: 2;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 36px 48px;
+    }
+
+    /* ---- HEADER ---- */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      animation: fadeDown 0.9s cubic-bezier(.16,1,.3,1) both;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-mark {
+      width: 42px; height: 42px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .logo-mark::before {
+      content: '';
+      position: absolute;
+      width: 200%; height: 200%;
+      background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%);
+      animation: shimmer 3s ease infinite;
+    }
+
+    .logo-mark span {
+      color: #05050e;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px;
+      letter-spacing: 1px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 26px;
+      letter-spacing: 3px;
+      color: var(--text);
+    }
+
+    .status-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    .status-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: blink 2s ease infinite;
+    }
+
+    /* ---- CENTRO ---- */
+    .center {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0;
+    }
+
+    .tag {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--accent);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+      animation: fadeUp 0.9s cubic-bezier(.16,1,.3,1) 0.1s both;
+    }
+
+    .headline {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(72px, 11vw, 160px);
+      line-height: 0.88;
+      letter-spacing: 2px;
+      color: var(--text);
+      animation: fadeUp 0.9s cubic-bezier(.16,1,.3,1) 0.2s both;
+    }
+
+    .headline .accent-word {
+      display: block;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      position: relative;
+    }
+
+    .subline {
+      margin-top: 28px;
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.6;
+      max-width: 460px;
+      animation: fadeUp 0.9s cubic-bezier(.16,1,.3,1) 0.3s both;
+    }
+
+    /* ---- PROGRESS BAR ---- */
+    .progress-wrap {
+      margin-top: 48px;
+      animation: fadeUp 0.9s cubic-bezier(.16,1,.3,1) 0.4s both;
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .progress-label {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .progress-pct {
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    .progress-track {
+      width: 480px;
+      max-width: 100%;
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 2px;
+      width: 0%;
+      animation: fillBar 2.5s cubic-bezier(.16,1,.3,1) 0.8s forwards;
+    }
+
+    .progress-glow {
+      position: absolute;
+      top: -4px; right: 0;
+      width: 24px; height: 10px;
+      background: var(--accent);
+      filter: blur(8px);
+      opacity: 0;
+      animation: glowMove 2.5s cubic-bezier(.16,1,.3,1) 0.8s forwards;
+    }
+
+    /* ---- MODULI / CHECKLIST ---- */
+    .modules {
+      display: flex;
+      gap: 10px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+      animation: fadeUp 0.9s cubic-bezier(.16,1,.3,1) 0.5s both;
+    }
+
+    .module {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 14px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+      transition: border-color 0.3s, color 0.3s;
+    }
+
+    .module.done {
+      border-color: #00e5a030;
+      color: var(--accent);
+    }
+
+    .module-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--border);
+      flex-shrink: 0;
+    }
+
+    .module.done .module-dot {
+      background: var(--accent);
+    }
+
+    .module.active .module-dot {
+      background: var(--accent2);
+      animation: blink 1s ease infinite;
+    }
+
+    .module.active {
+      border-color: #00b8d930;
+      color: var(--accent2);
+    }
+
+    /* ---- FOOTER ---- */
+    footer {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      animation: fadeUp 0.9s cubic-bezier(.16,1,.3,1) 0.6s both;
+    }
+
+    .footer-left {
+      font-family: 'DM Mono', monospace;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      line-height: 1.8;
+    }
+
+    .footer-left a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .counter {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(48px, 6vw, 80px);
+      color: var(--border);
+      letter-spacing: 4px;
+      line-height: 1;
+      text-align: right;
+      user-select: none;
+    }
+
+    /* ---- SCAN LINE ---- */
+    .scanline {
+      position: fixed;
+      left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      opacity: 0;
+      z-index: 10;
+      pointer-events: none;
+      animation: scanDown 6s ease infinite 1s;
+    }
+
+    /* ---- CORNER DECORATION ---- */
+    .corner {
+      position: fixed;
+      width: 60px; height: 60px;
+      pointer-events: none;
+      z-index: 3;
+    }
+    .corner.tl { top: 20px; left: 20px; border-top: 1px solid var(--muted); border-left: 1px solid var(--muted); }
+    .corner.tr { top: 20px; right: 20px; border-top: 1px solid var(--muted); border-right: 1px solid var(--muted); }
+    .corner.bl { bottom: 20px; left: 20px; border-bottom: 1px solid var(--muted); border-left: 1px solid var(--muted); }
+    .corner.br { bottom: 20px; right: 20px; border-bottom: 1px solid var(--muted); border-right: 1px solid var(--muted); }
+
+    /* ---- ANIMAZIONI ---- */
+    @keyframes fadeUp {
+      from { opacity:0; transform: translateY(20px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+
+    @keyframes fadeDown {
+      from { opacity:0; transform: translateY(-16px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+
+    @keyframes blink {
+      0%,100% { opacity:1; }
+      50% { opacity:0.2; }
+    }
+
+    @keyframes shimmer {
+      0%   { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+
+    @keyframes fillBar {
+      from { width: 0%; }
+      to   { width: 68%; }
+    }
+
+    @keyframes glowMove {
+      from { right: 32%; opacity: 0; }
+      to   { right: 32%; opacity: 1; }
+    }
+
+    @keyframes scanDown {
+      0%   { top: -2px; opacity: 0; }
+      5%   { opacity: 0.6; }
+      95%  { opacity: 0.3; }
+      100% { top: 100vh; opacity: 0; }
+    }
+
+    @keyframes counterTick {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 640px) {
+      .page { padding: 24px 24px; }
+      .progress-track { width: 100%; }
+      footer { flex-direction: column; gap: 24px; align-items: flex-start; }
+      .counter { font-size: 48px; }
+    }
+  </style>
+</head>
+<body>
+
+  <canvas id="bg"></canvas>
+  <div class="noise"></div>
+  <div class="scanline"></div>
+
+  <div class="corner tl"></div>
+  <div class="corner tr"></div>
+  <div class="corner bl"></div>
+  <div class="corner br"></div>
+
+  <div class="page">
+
+    <header>
+      <div class="logo">
+        <div class="logo-mark"><span>DL</span></div>
+        <span class="logo-name">Driplik</span>
+      </div>
+      <div class="status-pill">
+        <span class="status-dot"></span>
+        In costruzione
+      </div>
+    </header>
+
+    <div class="center">
+      <div class="tag">// work in progress</div>
+      <h1 class="headline">
+        Stiamo
+        <span class="accent-word">costruendo</span>
+        qualcosa
+      </h1>
+      <p class="subline">
+        Driplik ti dira' esattamente dove il tuo negozio online sta perdendo soldi — con dati reali e consigli concreti. Torna presto.
+      </p>
+
+      <div class="progress-wrap">
+        <div class="progress-meta">
+          <span class="progress-label">Avanzamento sviluppo</span>
+          <span class="progress-pct" id="pct">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill"></div>
+          <div class="progress-glow"></div>
+        </div>
+      </div>
+
+      <div class="modules">
+        <div class="module done"><span class="module-dot"></span>Design UI</div>
+        <div class="module done"><span class="module-dot"></span>Integrazione PageSpeed</div>
+        <div class="module done"><span class="module-dot"></span>Motore AI</div>
+        <div class="module active"><span class="module-dot"></span>Backend & deploy</div>
+        <div class="module"><span class="module-dot"></span>Beta testing</div>
+        <div class="module"><span class="module-dot"></span>Launch</div>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-left">
+        driplik.com &nbsp;&mdash;&nbsp; audit per e-commerce<br/>
+        <a href="mailto:ciao@driplik.com">ciao@driplik.com</a>
+      </div>
+      <div class="counter" id="counter">00:00:00</div>
+    </footer>
+
+  </div>
+
+  <script>
+    // ---- CANVAS PARTICELLE ----
+    const canvas = document.getElementById('bg');
+    const ctx = canvas.getContext('2d');
+
+    let W, H, particles = [];
+
+    function resize() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+
+    function initParticles() {
+      particles = [];
+      const count = Math.floor((W * H) / 14000);
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x: Math.random() * W,
+          y: Math.random() * H,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: -Math.random() * 0.5 - 0.1,
+          r: Math.random() * 1.5 + 0.3,
+          alpha: Math.random() * 0.6 + 0.1,
+          color: Math.random() > 0.5 ? '#00e5a0' : '#00b8d9',
+        });
+      }
+    }
+
+    function drawParticles() {
+      ctx.clearRect(0, 0, W, H);
+
+      // connessioni
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < 120) {
+            ctx.beginPath();
+            ctx.strokeStyle = `rgba(0, 229, 160, ${0.04 * (1 - dist / 120)})`;
+            ctx.lineWidth = 0.5;
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // punti
+      for (const p of particles) {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = p.alpha;
+        ctx.fill();
+        ctx.globalAlpha = 1;
+
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.y < -10) { p.y = H + 10; p.x = Math.random() * W; }
+        if (p.x < -10) p.x = W + 10;
+        if (p.x > W + 10) p.x = -10;
+      }
+
+      requestAnimationFrame(drawParticles);
+    }
+
+    resize();
+    initParticles();
+    drawParticles();
+    window.addEventListener('resize', () => { resize(); initParticles(); });
+
+    // ---- CONTATORE UPTIME ----
+    const start = Date.now();
+    const counterEl = document.getElementById('counter');
+
+    function updateCounter() {
+      const elapsed = Math.floor((Date.now() - start) / 1000);
+      const h = String(Math.floor(elapsed / 3600)).padStart(2, '0');
+      const m = String(Math.floor((elapsed % 3600) / 60)).padStart(2, '0');
+      const s = String(elapsed % 60).padStart(2, '0');
+      counterEl.textContent = h + ':' + m + ':' + s;
+    }
+
+    setInterval(updateCounter, 1000);
+
+    // ---- PERCENTUALE ANIMATA ----
+    const pctEl = document.getElementById('pct');
+    let current = 0;
+    const target = 68;
+
+    setTimeout(() => {
+      const tick = setInterval(() => {
+        current++;
+        pctEl.textContent = current + '%';
+        if (current >= target) clearInterval(tick);
+      }, 2500 / target);
+    }, 800);
+
+    // ---- MOUSE PARALLAX LEGGERO ----
+    document.addEventListener('mousemove', (e) => {
+      const xRatio = (e.clientX / window.innerWidth - 0.5) * 12;
+      const yRatio = (e.clientY / window.innerHeight - 0.5) * 8;
+      document.querySelector('.headline').style.transform = `translate(${xRatio * 0.3}px, ${yRatio * 0.3}px)`;
+    });
+  </script>
+
+</body>
+</html>
